@@ -1,10 +1,9 @@
 # make a dashboard to make user investment plan
 # Import libraries
 import pandas as pd
-import numpy as np
 import dash
-from dash import html, dcc, dash_table, html
-from dash.dash_table.Format import Format, Scheme, Trim
+from dash import html, dcc, dash_table
+from dash.dash_table.Format import Format, Scheme
 from dash.dependencies import Input, Output, State
 import plotly.express as px
 import dash_bootstrap_components as dbc
@@ -27,7 +26,7 @@ portfolio = pd.DataFrame({
     'quantity':[16.81,18.957,11.455,76.756,12.256,197.257,18.878],
     'future_percents':[30,25,25,5,5,5,5]
 })
-
+n_old = 0
 # markdown style
 markdown_style = {'text-align':'left','color': '#373F27','font-size':25,'font_family': 'Verdana','backgroundColor': '#FFFFFF', 'padding':'5px'}
 # input style
@@ -96,28 +95,26 @@ app.layout = html.Div([
     ]),
 
 ])
-# callback and function to add rows to the datatable
+# callback and function to add rows to the datatable and to update the quantity column
 @app.callback(Output('user-input', 'data'),
-              Input('editing-rows-button', 'n_clicks'),
-              State('user-input', 'data'),
-              State('user-input', 'columns'))
-def add_row(n_clicks, rows, columns):
-    if n_clicks > 0:
-        rows.append({c['id']: '' for c in columns})
-    return rows
-
-# callback and function to update the current percent column
-@app.callback(Output('user-input','data'),
               Input('user-input','data_timestamp'),
-              State('user-input','data'))
-def update_percent(timestamp, rows):
-    list = []
-    for row in rows:
-        list.append(row['quantity'])
-    total = sum(list)
-    for row in rows:
-        quantity = float(row['quantity'])
-        row['percent'] = (quantity/total)*100
+              Input('editing-rows-button', 'n_clicks'),
+              State('user-input', 'data'))
+def update_row(timestamp, n_clicks, rows):
+    global n_old
+    if n_clicks > 0 and n_clicks>n_old:
+        rows.append({'ticker':'','quantity':0,'future_percents':0,'percent':0,'editable':True,'deletable':True})
+        n_old = n_old+1
+    try:
+        list = []
+        for row in rows:
+            list.append(row['quantity'])
+            total = sum(list)
+        for row in rows:
+            quantity = float(row['quantity'])
+            row['percent'] = (quantity/total)*100 
+    except:
+        print('Error')
     return rows
 
 # callback and funtion to make the pie chart of the users current investment distributions

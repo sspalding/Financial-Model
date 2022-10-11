@@ -6,17 +6,6 @@ import numpy as np
 import plotly.express as px
 import plotly.graph_objects as go
 
-# user data
-portfolio = pd.DataFrame({
-    'ticker':['FXAIX','FSSNX','FSPSX','VDADX','FXNAX','VGAVX','FSRNX'],
-    'quantity':[16.81,18.957,11.455,76.756,12.256,197.257,18.878],
-    'category':['stock','stock','stock','bond','bond','bond','real estate'],
-    'future_percents':[30,25,25,5,5,5,5]
-})
-# monthly amount to invest total
-monthly_investments = 6000
-# Number of years plan to invest
-years_to_invest = 9
 
 # data information
 today = date.today()
@@ -62,7 +51,7 @@ def CalculateAvgCostPerShare(ticker):
     return average_cost
 
 # how much is your current initial investment worth
-def calcCurrentWorth (ticker):
+def calcCurrentWorth (ticker,portfolio):
     quantity = portfolio.loc[portfolio['ticker'] == ticker]['quantity']
     cost_per_share = pd.DataFrame(MonthlyCost(ticker))
     cost_per_share = cost_per_share.iloc[-1:]
@@ -89,7 +78,7 @@ def totalInvestmentPrediction (Portfolio,Monthly_investments,Years_to_invest):
 
     for ticker, percent in zip(Portfolio['ticker'], Portfolio['future_percents']):
 
-        principal = calcCurrentWorth(ticker)                        # find the current worth of the stock
+        principal = calcCurrentWorth(ticker,Portfolio)                        # find the current worth of the stock
         interest = interestRate(ticker)                             # find the growth rate of the stock over the past five years
         compounding_period = 12                                     # assign how often the interest will compound, 12 = monthly
         months = Years_to_invest*compounding_period                                     # assign how lond the user plans to invest for
@@ -139,7 +128,7 @@ def percents(Portfolio):
 def currentPortfolioWorth(portfolio):
     current_value = []
     for ticker in portfolio['ticker']:
-        ticker_value = calcCurrentWorth (ticker)
+        ticker_value = calcCurrentWorth (ticker,portfolio)
         current_value.append(ticker_value)
     portfolio_current_value = sum(current_value)
     return portfolio_current_value

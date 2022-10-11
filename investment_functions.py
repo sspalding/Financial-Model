@@ -11,7 +11,7 @@ portfolio = pd.DataFrame({
     'ticker':['FXAIX','FSSNX','FSPSX','VDADX','FXNAX','VGAVX','FSRNX'],
     'quantity':[16.81,18.957,11.455,76.756,12.256,197.257,18.878],
     'category':['stock','stock','stock','bond','bond','bond','real estate'],
-    'future_percents':[0.30,0.25,0.25,0.05,0.05,0.05,0.05]
+    'future_percents':[30,25,25,5,5,5,5]
 })
 # monthly amount to invest total
 monthly_investments = 6000
@@ -93,7 +93,7 @@ def totalInvestmentPrediction (Portfolio,Monthly_investments,Years_to_invest):
         interest = interestRate(ticker)                             # find the growth rate of the stock over the past five years
         compounding_period = 12                                     # assign how often the interest will compound, 12 = monthly
         months = Years_to_invest*compounding_period                                     # assign how lond the user plans to invest for
-        monthly_contribution = percent*Monthly_investments          # assign how much the user plans to invest in this stock per month
+        monthly_contribution = (percent/100)*Monthly_investments          # assign how much the user plans to invest in this stock per month
         dividends = CalculateAvgDividend(ticker)                    # calculate the average dividends returned
         dividends_compounding = 3                                   # the dividends compound quarterly
         avg_cost_per_share = CalculateAvgCostPerShare(ticker)       # calculate the average cost per share of the stock
@@ -134,3 +134,12 @@ def percents(Portfolio):
 
     Portfolio['percent'] = percents
     return Portfolio
+
+# calculate current portfolio worth 
+def currentPortfolioWorth(portfolio):
+    current_value = []
+    for ticker in portfolio['ticker']:
+        ticker_value = calcCurrentWorth (ticker)
+        current_value.append(ticker_value)
+    portfolio_current_value = sum(current_value)
+    return portfolio_current_value

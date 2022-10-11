@@ -1,0 +1,47 @@
+/*Daisy = #E9E7DA;
+Gold = #CDA34F
+Stem = #636B46
+Greenery = #373F27
+charcoal = #373737
+*/
+
+body {
+    background-color:#FFFFFF;
+    margin: 5px;
+    padding: 5px;
+  }
+h1 {
+    text-align: center; 
+    color: #E9E7DA;
+    background-color: #636B46;
+    padding: 5px;
+    margin: 0;
+    font-size: 40; 
+    font-family: Georgia, serif;
+}
+h2 {
+    text-align: left;
+    color: #373F27;
+    font-size:25;
+    padding:5px;
+    border: 2px solid;
+    border-color: #E9E7DA;
+    font-family: Georgia, serif;
+}
+.dropdown {
+    color: #373F27;
+    font-size: 25;
+    font-family: Verdana, sans-serif;
+}
+button {
+    font-size:30;
+    color:#E9E7DA;
+    padding: 5px;
+    border-radius: 5px;
+    background-color: #CDA34F;
+    border: 1px solid;
+    border-color:#373737;
+    font-family: Verdana, sans-serif;
+    margin:2px;
+}
+

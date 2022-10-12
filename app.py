@@ -6,6 +6,7 @@ from dash import html, dcc, dash_table
 from dash.dash_table.Format import Format, Scheme
 from dash.dependencies import Input, Output, State
 import plotly.express as px
+import plotly.graph_objects as go
 import dash_bootstrap_components as dbc
 import gunicorn
 import investment_functions as inv
@@ -21,12 +22,16 @@ server = app.server
 instructions_text = '''Instructions for data table and dashboard.
 '''
 
+# starter data for the datatable
 portfolio = pd.DataFrame({
     'ticker':['FXAIX','FSSNX','FSPSX','VDADX','FXNAX','VGAVX','FSRNX'],
     'quantity':[16.81,18.957,11.455,76.756,12.256,197.257,18.878],
     'future_percents':[30,25,25,5,5,5,5]
 })
+
+# global variable to keep track of clicks on the data table adding rows
 n_old = 0
+
 # markdown style
 markdown_style = {'text-align':'left','color': '#373F27','font-size':25,'font_family': 'Verdana','backgroundColor': '#FFFFFF', 'padding':'5px'}
 # input style
@@ -44,7 +49,7 @@ app.layout = html.Div([
     html.H1('Investment Strategy'),
     # instructions for dashboard
     dcc.Markdown(children = instructions_text, style = markdown_style),
-    # markdown explaining how to use the table below
+    # datatable for user input
     html.Div([
         dash_table.DataTable(
             id='user-input',
@@ -56,7 +61,7 @@ app.layout = html.Div([
                 {'id':'quantity', 'name':'Quantity', 'type':'numeric', 'format':Format(precision=2, scheme=Scheme.fixed)},
                 {'id':'future_percents', 'name':'Monthly Investment Distribution (%)', 'type':'numeric', 'format':Format(precision=2, scheme=Scheme.fixed)},
                 {'id':'percent', 'name':'Current Portfolio Distribution (%)', 'type':'numeric', 'format':Format(precision=2, scheme=Scheme.fixed)},
-                ],
+            ],
             editable = True,
             row_deletable = True,
         ),
@@ -95,6 +100,7 @@ app.layout = html.Div([
     ]),
 
 ])
+
 # callback and function to add rows to the datatable and to update the quantity column
 @app.callback(Output('user-input', 'data'),
               Input('user-input','data_timestamp'),
@@ -109,7 +115,7 @@ def update_row(timestamp, n_clicks, rows):
         list = []
         for row in rows:
             list.append(row['quantity'])
-            total = sum(list)
+        total = sum(list)
         for row in rows:
             quantity = float(row['quantity'])
             row['percent'] = (quantity/total)*100 
@@ -162,12 +168,22 @@ def investmentPredictions (n_clicks, data, monthly, years):
 def investmentPredictions (n_clicks, data, monthly, years):
     user_data = pd.DataFrame(data)
     prediction = inv.amountPeryear(user_data, monthly, years)
-    fig2 = px.line(prediction, x = prediction['Year'], y = prediction['Amount'])
+    pred_with_investments = inv.compareInvestedtoGrowth(prediction,user_data,monthly,years)
+
+    fig2 = go.Figure()
+    fig2.add_trace(go.Scatter(x = pred_with_investments['Year'], y = pred_with_investments['Amount'], name = 'Predicted Investments Worth',
+                              line = dict(color='#636B46')))
+    fig2.add_trace(go.Scatter(x = pred_with_investments['Year'], y = pred_with_investments['Money_Invested'], name ='Amount Invested',
+                              line = dict(color='#949494', dash='dash')))
+
+    # fig2 = px.line(pred_with_investments, x = 'Year', y = ['Amount','Money_Invested'], 
+    #                color_discrete_map={'Amount':'#636B46','Money_Invested':'#949494'},
+    #                labels = {'Amount':'Predicted Investments Worth','Money_invested':'Amount Invested'})
+    fig2.update_layout(legend_title_text = 'Legend',legend = dict(font=dict(size=15, color='#373F27', family = 'Verdana')))
     fig2.update_layout(title = 'Predicted Portfolio Growth',title_font=dict(size=20, color='#373F27', family = 'Verdana'))
     fig2.update_xaxes(title = 'Year', title_font=dict(size=15, color='#373F27', family = 'Verdana'))
     fig2.update_yaxes(title = 'Portfolio Worth (USD)', title_font=dict(size=15, color='#373F27', family = 'Verdana'))
     fig2.update_layout(plot_bgcolor = '#E9E7DA')
-    fig2.update_traces(line_color = '#636B46')
     return fig2
 
 # Run the app

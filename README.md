@@ -37,8 +37,7 @@ The time frame for the calculations is taken as the number of years the user pla
 
 ## Build Instructions:  
 1. Clone the main branch of the repository
-2. If you are interested in playing around with the financial model that was built outside of the dashboard run the .ipynb file
-3. Run the app.py file to run the dashboard on your local machine  
+2. Run the app.py file to run the dashboard on your local machine  
 
 ## Disclaimer:
 This dashboard is meant to be used for investment purposes and not as actionable investment advice. Past performance is not an indicator of future performance.  

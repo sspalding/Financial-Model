@@ -1,5 +1,5 @@
 # Portfolio-Growth-Model
-A dashboard to take in user input of stocks they are investing in and predict the portfolio growth over time.  
+A computational model to predict the portfolio growth over time based on the specific investments of an individual.  
 Check out the [Dashboard](https://portfolio-growth-model.herokuapp.com/)  
 
 ## Methodology:  

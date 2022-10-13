@@ -10,6 +10,9 @@ import plotly.graph_objects as go
 import dash_bootstrap_components as dbc
 import gunicorn
 import investment_functions as inv
+import yfinance as yf
+from datetime import date
+import functools
 
 # Create a dash application
 app = dash.Dash(__name__, 

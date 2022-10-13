@@ -19,9 +19,38 @@ app.title = 'Investment Strategy'                               # change the nam
 server = app.server
 
 # dashboard instructions markdown text
-instructions_text = '''Instructions for data table and dashboard.
+instructions_text = '''**Current Investments Table:**    
+- Ticker Column: Fill this column out with the tickers' of all of your current investments. Be sure to put the tickers in all capitals.  
+- Quantity Column: Fill this column out with the quantity of each ticker that you currently own.   
+- Monthly Investment Distribution Column: Fill this column out with the percent of your monthly investment that you would like to go to each investment. \
+Be sure to have the Monthly Investment Distribution Column add up to 100%.  
+- Current Portfolio Distribution Column: Don't worry about filling out this column, it will auto-update based on your input.  
+- Use the 'Add Row' button to add rows to the table, you can also delete rows using the 'X' on the left of the table.  
+
+A pie chart will appear below the table, this pie chart shows your current portfilio distribution.
 '''
 
+# predicted portfolio growth markdown text
+growth_text = '''**Portfolio Growth:**  
+- Fill out the dollar amount you plan to invest per month and the number of years you plan to invest that amount.  
+- Click the submit button once you have entered those two amounts. 
+
+Below two amounts will appear: the total amount you invested over that time (including your initial investments from the table above) and the predicted future portfolio worth.  
+A graph will also appear below that will compare the trends of these two amounts over time. 
+'''
+
+# Notes markdown text
+notes_text = '''**Notes:**  
+- The total amount invested is based on if your bought all of the stocks in the current investments table at the current date and time. \
+    Most likely this is not the case and the worth of the stocks has changed over time, therefore this may add some error into the model.  
+- The interest rate of the stock used for the growth calculation was the Average Annual Growth Rate (AAGR). This rate was calculated over the past number of years that you plan to invest. \
+    For example if you plan to invest for eight years it would calculate the AAGR for the past eight years. If the amount of years you plan to invest is longer than the number of years the \
+        stock has existed then the AAGR would be calculated for the max number of years the stock has existed.  
+- The model was built on the assumptions that the dividends would be reinvested quarterly. The amount of dividends was taken as the average dividends that has been returned for the past number of years \
+    you plan to invest, similar to the time period for the AAGR.  
+- The model was built using the average cost per share of the stock for the past time period the user plans to invest, similar to time period for the AAGR.  
+- This model is purely for educational purposes and is not meant to be taken as actionable investment advice. Past returns are not a gaurantee of future returns. 
+'''
 # starter data for the datatable
 portfolio = pd.DataFrame({
     'ticker':['FXAIX','FSSNX','FSPSX','VDADX','FXNAX','VGAVX','FSRNX'],
@@ -33,7 +62,7 @@ portfolio = pd.DataFrame({
 n_old = 0
 
 # markdown style
-markdown_style = {'text-align':'left','color': '#373F27','font-size':25,'font_family': 'Verdana','backgroundColor': '#FFFFFF', 'padding':'5px'}
+markdown_style = {'text-align':'left','color': '#373F27','font-size':20,'font_family': 'Verdana','backgroundColor': '#FFFFFF', 'padding':'5px'}
 # input style
 input_style = {'font-size':20,'color':'#373F27','margin': '2px','padding': '5px'}
 # table style
@@ -75,6 +104,7 @@ app.layout = html.Div([
     html.Br(),
     # input the rest of our user data
     html.Div([
+        dcc.Markdown(children = growth_text, style = markdown_style),
         dbc.Row([
             dbc.Col(html.P("Amount Invested per Month:", style = p_style)),
             dbc.Col(dcc.Input(id='monthly_investment',type="number",placeholder="Monthly Investment", min=0, style=input_style)),
@@ -96,7 +126,8 @@ app.layout = html.Div([
     ]),
     # scatter plot of selection from drop down menu
     html.Div([
-        dcc.Graph(id = 'predictions-graph')
+        dcc.Graph(id = 'predictions-graph'),
+        dcc.Markdown(children = notes_text, style = markdown_style),
     ]),
 
 ])
@@ -175,10 +206,6 @@ def investmentPredictions (n_clicks, data, monthly, years):
                               line = dict(color='#636B46')))
     fig2.add_trace(go.Scatter(x = pred_with_investments['Year'], y = pred_with_investments['Money_Invested'], name ='Amount Invested',
                               line = dict(color='#949494', dash='dash')))
-
-    # fig2 = px.line(pred_with_investments, x = 'Year', y = ['Amount','Money_Invested'], 
-    #                color_discrete_map={'Amount':'#636B46','Money_Invested':'#949494'},
-    #                labels = {'Amount':'Predicted Investments Worth','Money_invested':'Amount Invested'})
     fig2.update_layout(legend_title_text = 'Legend',legend = dict(font=dict(size=15, color='#373F27', family = 'Verdana')))
     fig2.update_layout(title = 'Predicted Portfolio Growth',title_font=dict(size=20, color='#373F27', family = 'Verdana'))
     fig2.update_xaxes(title = 'Year', title_font=dict(size=15, color='#373F27', family = 'Verdana'))

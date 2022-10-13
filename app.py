@@ -120,6 +120,7 @@ app.layout = html.Div([
         ]),
     ]),
     html.Div([
+            # print the total amount of money the user invested
             html.P(id='amt-invested', style = p_style),
             # print the prediction of the machine learning model
             html.P(id='growth-predictions', style = p_style),
@@ -138,19 +139,24 @@ app.layout = html.Div([
               Input('editing-rows-button', 'n_clicks'),
               State('user-input', 'data'))
 def update_row(timestamp, n_clicks, rows):
+    # decale n_old as a global variable
     global n_old
+    # determine if the n_clicks is above zero and has changed 
     if n_clicks > 0 and n_clicks>n_old:
+        # add a new row to the table
         rows.append({'ticker':'','quantity':0,'future_percents':0,'percent':0,'editable':True,'deletable':True})
+        # increment n_old
         n_old = n_old+1
+    # try to find the percent of current portfolio each investment has
     try:
-        list = []
-        for row in rows:
+        list = []                                       # create a new list
+        for row in rows:                                # add all of the quantities to that list
             list.append(row['quantity'])
-        total = sum(list)
-        for row in rows:
+        total = sum(list)                               # sum those quantities
+        for row in rows:                                # calculate the percent for each row
             quantity = float(row['quantity'])
             row['percent'] = (quantity/total)*100 
-    except:
+    except:                                             # if the percent cannot be found give an error
         print('Error')
     return rows
 
@@ -158,7 +164,9 @@ def update_row(timestamp, n_clicks, rows):
 @app.callback(Output('investment-distribution','figure'),
               Input('user-input','data'))
 def pieUserInvest (rows):
-    df = pd.DataFrame(rows)
+    # make the user date into a dataframe
+    df = pd.DataFrame(rows)  
+    # make a pie chart of the users investment distribution   
     fig1 = px.pie(df, values=df['percent'], names=df['ticker'], color_discrete_sequence=px.colors.sequential.speed)
     fig1.update_layout(plot_bgcolor = '#D5D5D5')
     fig1.update_layout(title="User Investment Strategy",title_font=dict(size=20, color='#373F27', family = 'Verdana'))
@@ -172,9 +180,9 @@ def pieUserInvest (rows):
               State('monthly_investment','value'),
               State('years_to_invest','value'))
 def investmentPredictions (n_clicks, data, monthly, years):
-    user_data = pd.DataFrame(data)
-    prediction1 = inv.amountPeryear(user_data, monthly, years)
-    prediction = prediction1.iloc[-1:]
+    user_data = pd.DataFrame(data)                                      # make a dataframe of the user data
+    prediction1 = inv.amountPeryear(user_data, monthly, years)          # get a prediction from the functions we made
+    prediction = prediction1.iloc[-1:]                                  # get the last value of the dataframe
     prediction = prediction['Amount'].values[0]
     return f'Predicted Future Portfolio Worth: ${prediction.round(2)}' 
 
@@ -185,9 +193,9 @@ def investmentPredictions (n_clicks, data, monthly, years):
               State('monthly_investment','value'),
               State('years_to_invest','value'))
 def investmentPredictions (n_clicks, data, monthly, years):
-    user_data = pd.DataFrame(data)
-    current_portfolio_worth = inv.currentPortfolioWorth(user_data)
-    amount_invested = ((monthly*12)*years)+current_portfolio_worth
+    user_data = pd.DataFrame(data)                                      # make a dataframe of the user data
+    current_portfolio_worth = inv.currentPortfolioWorth(user_data)      # determine the current worth of the user portfolio
+    amount_invested = ((monthly*12)*years)+current_portfolio_worth      # determine the total amount invested
     return f'Total Amount Invested: ${amount_invested.round(2)}' 
 
 # callback function to make a graph of the predictions we just performed
@@ -197,14 +205,15 @@ def investmentPredictions (n_clicks, data, monthly, years):
               State('monthly_investment','value'),
               State('years_to_invest','value'))
 def investmentPredictions (n_clicks, data, monthly, years):
-    user_data = pd.DataFrame(data)
-    prediction = inv.amountPeryear(user_data, monthly, years)
-    pred_with_investments = inv.compareInvestedtoGrowth(prediction,user_data,monthly,years)
-
-    fig2 = go.Figure()
-    fig2.add_trace(go.Scatter(x = pred_with_investments['Year'], y = pred_with_investments['Amount'], name = 'Predicted Investments Worth',
+    user_data = pd.DataFrame(data)                                                                      # make a dataframe of the userdata
+    prediction = inv.amountPeryear(user_data, monthly, years)                                           # get a prediction for the growth
+    pred_with_investments = inv.compareInvestedtoGrowth(prediction,user_data,monthly,years)             # add the amount invested as a new column in the dataframe
+    fig2 = go.Figure()                                                                                  # make a graph comparing the trends of these columns
+    fig2.add_trace(go.Scatter(x = pred_with_investments['Year'], y = pred_with_investments['Amount'], 
+                              name = 'Predicted Investments Worth',
                               line = dict(color='#636B46')))
-    fig2.add_trace(go.Scatter(x = pred_with_investments['Year'], y = pred_with_investments['Money_Invested'], name ='Amount Invested',
+    fig2.add_trace(go.Scatter(x = pred_with_investments['Year'], y = pred_with_investments['Money_Invested'],
+                              name ='Amount Invested',
                               line = dict(color='#949494', dash='dash')))
     fig2.update_layout(legend_title_text = 'Legend',legend = dict(font=dict(size=15, color='#373F27', family = 'Verdana')))
     fig2.update_layout(title = 'Predicted Portfolio Growth',title_font=dict(size=20, color='#373F27', family = 'Verdana'))

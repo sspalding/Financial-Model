@@ -11,5 +11,3 @@ plotly
 dash-bootstrap-components
 yfinance
 datetime
-functools
-investment_functions

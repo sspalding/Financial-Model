@@ -17,14 +17,14 @@ The time frame for the calculations is taken as the number of years the user pla
     The current worth of the portfolio was taken by summing the current stock worth of each of the stocks the user has in their portfolio. 
 - Interest Rate:   
     The interest rate was calculated as the Average Annual Growth Rate (AAGR) of a given stock. It is given by the formulas below.  
-    AAGR = (GR<sub>1</sub> + GR<sub>2</sub> + GR<sub>3</sub> + ... + GR<sub>N</sub>)/N
-    GR = (YearWorth / PreviousYearWorth) - 1
-    N = Number of Years
+        AAGR = (GR<sub>1</sub> + GR<sub>2</sub> + GR<sub>3</sub> + ... + GR<sub>N</sub>)/N
+        GR = (YearWorth / PreviousYearWorth) - 1
+        N = Number of Years
 - Investment Growth:   
     If it was a month dividends were distributed:  
-    total = amt + (amt * (interest / 12)) + monthly_contribution + ((amt / avg_cost_per_share) * dividends)   
+        Total = amt + (amt * (interest / 12)) + monthly_contribution + ((amt / avg_cost_per_share) * dividends)   
     If it was not a month dividends were distributed:  
-    Total = amt + (amt * (interest / 12)) + monthly_contribution  
+        Total = amt + (amt * (interest / 12)) + monthly_contribution  
     amt = the worth of the previous month   
     These totals were taken for every month the user planned to invest for and for every stock the user invested in. Then the end of year value for each stock for each     was summed to make a table of the years the user planned to invest and the total portfolio worth at the end of each year. 
     

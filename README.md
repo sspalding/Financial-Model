@@ -3,7 +3,7 @@ A dashboard to take in user input of stocks they are investing in and predict th
 Check out the [Dashboard](https://portfolio-growth-model.herokuapp.com/)  
 
 ## Methodology:  
-The main purpose of this project was to demonstrate the power of compounding over time.  The model was built using the yfinance library which uses the yahoo finance API to download market data. The model assumes the user is recievind dividends quarterly and is reinvesting their dividends. The model is also assuming that the user will invest the same amount for every month for the specified time period.  
+The main purpose of this project was to demonstrate the power of compounding over time.  The computational model was built using the yfinance library which uses the yahoo finance API to download market data. It was assumed the user is receiving dividends quarterly and is reinvesting the dividends. It is also assumed that the user will invest the same amount for every month for the specified time period.  
 
 ### Calculations:  
 The time frame for the calculations is taken as the number of years the user plans to invest but in the past. For example if the user plans to invest for eight years it would calculate the average for the past eight years. If the amount of years the user plans to invest is longer than the number of years the stock has existed then the average would be calculated for the max number of years the stock has existed.

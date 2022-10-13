@@ -2,7 +2,6 @@
 import pandas as pd
 import yfinance as yf
 from datetime import date
-import plotly.graph_objects as go
 import functools
 
 # data information
